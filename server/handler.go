@@ -163,8 +163,8 @@ func query(requests *gin.Context) {
 			"message": "wrong params",
 		})
 	} else {
-		key, password := util.Parse(token)   // 分离出 key 和 password
-		key = strings.ToLower(key)           // 进行大写到小写的转换
+		//key, password := util.Parse(token)   // 分离出 key 和 password
+		key := strings.ToLower(token)        // 进行大写到小写的转换
 		table, err := util.ValidChecker(key) // 正则匹配
 
 		if err != nil {
@@ -193,7 +193,7 @@ func query(requests *gin.Context) {
 						})
 					}
 				} else {
-					if paste.Password == "" || paste.Password == convert.String2md5(password) { // 密码为空或者密码正确
+					if paste.Password == 0 { // 密码为空或者密码正确
 						logger.Info(util.LoggerInfo(IP, "Password accept"))
 						if err := paste.Delete(); err != nil {
 							requests.JSON(http.StatusInternalServerError, gin.H{
@@ -217,11 +217,12 @@ func query(requests *gin.Context) {
 						}
 
 					} else {
-						logger.Info(util.LoggerInfo(IP, "Password wrong")) // 密码错误
+						logger.Info(util.LoggerInfo(IP, "With Password Encrypted")) // 密码错误
 						requests.JSON(http.StatusOK, gin.H{
 							"status":  http.StatusUnauthorized,
-							"error":   "wrong password",
-							"message": "wrong password",
+							"message": "Password Encrypted",
+							"lang":    paste.Lang,
+							"content": paste.Content,
 						})
 					}
 				}
@@ -244,7 +245,7 @@ func query(requests *gin.Context) {
 						})
 					}
 				} else {
-					if paste.Password == "" || paste.Password == convert.String2md5(password) { // 密码为空或者密码正确
+					if paste.Password == 0 { // 密码为空
 						logger.Info(util.LoggerInfo(IP, "Password accept"))
 						jsonRequest := requests.DefaultQuery("json", "false")
 						if jsonRequest == "false" {
@@ -259,11 +260,12 @@ func query(requests *gin.Context) {
 							})
 						}
 					} else {
-						logger.Info(util.LoggerInfo(IP, "Password wrong")) // 密码错误
+						logger.Info(util.LoggerInfo(IP, "With Password Encrypted")) // 密码错误
 						requests.JSON(http.StatusOK, gin.H{
 							"status":  http.StatusUnauthorized,
-							"error":   "wrong password",
-							"message": "wrong password",
+							"message": "Password Encrypted",
+							"lang":    paste.Lang,
+							"content": paste.Content,
 						})
 					}
 				}
